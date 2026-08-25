@@ -1,20 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Memory Card Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <h1>🧠 Memory Card Game</h1>
+    <div class="container">
 
-    <div class="info">
-        <p>Moves: <span id="moves">0</span></p>
-        <button onclick="restartGame()">Restart Game</button>
+        <h1>🧠 Memory Match</h1>
+        <p class="subtitle">Find all matching pairs!</p>
+
+        <div class="difficulty">
+            <button class="level active" onclick="changeLevel('easy', this)">
+                Easy
+            </button>
+
+            <button class="level" onclick="changeLevel('medium', this)">
+                Medium
+            </button>
+
+            <button class="level" onclick="changeLevel('hard', this)">
+                Hard
+            </button>
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <span>⏱️</span>
+                <strong id="timer">00:00</strong>
+                <small>Time</small>
+            </div>
+
+            <div class="stat">
+                <span>🎯</span>
+                <strong id="moves">0</strong>
+                <small>Moves</small>
+            </div>
+
+            <div class="stat">
+                <span>⭐</span>
+                <strong id="score">1000</strong>
+                <small>Score</small>
+            </div>
+
+            <div class="stat">
+                <span>🏆</span>
+                <strong id="bestScore">0</strong>
+                <small>Best</small>
+            </div>
+
+        </div>
+
+        <div id="gameBoard" class="game-board"></div>
+
+        <button class="restart-btn" onclick="restartGame()">
+            🔄 Restart Game
+        </button>
+
     </div>
 
-    <div class="game-board" id="gameBoard"></div>
+
+    <!-- Winning Popup -->
+
+    <div id="winScreen" class="win-screen">
+
+        <div class="win-box">
+
+            <div class="trophy">🏆</div>
+
+            <h2>Congratulations!</h2>
+
+            <p>You found all the pairs! 🎉</p>
+
+            <div class="final-stats">
+
+                <p>⏱️ Time: <strong id="finalTime">00:00</strong></p>
+
+                <p>🎯 Moves: <strong id="finalMoves">0</strong></p>
+
+                <p>⭐ Score: <strong id="finalScore">0</strong></p>
+
+            </div>
+
+            <button onclick="restartGame()" class="play-again">
+                🎮 Play Again
+            </button>
+
+        </div>
+
+    </div>
+
 
     <script src="script.js"></script>
 
