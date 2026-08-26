@@ -1,102 +1,798 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Match Game</title>
-    <link rel="stylesheet" href="style.css">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Memory Match</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
 </head>
 
 <body>
 
-    <div class="container">
 
-        <h1>🧠 Memory Match</h1>
-        <p class="subtitle">Find all matching pairs!</p>
+<!-- =========================
+     HOME SCREEN
+========================= -->
 
-        <div class="difficulty">
-            <button class="level active" onclick="changeLevel('easy', this)">
-                Easy
-            </button>
+<section id="homeScreen"
+         class="screen">
 
-            <button class="level" onclick="changeLevel('medium', this)">
-                Medium
-            </button>
+    <div class="home-box">
 
-            <button class="level" onclick="changeLevel('hard', this)">
-                Hard
-            </button>
+        <div class="logo">
+            🧠
         </div>
 
-        <div class="stats">
+        <h1>
+            Memory Match
+        </h1>
 
-            <div class="stat">
-                <span>⏱️</span>
-                <strong id="timer">00:00</strong>
-                <small>Time</small>
+        <p class="tagline">
+            Test your memory and become
+            a Memory Master!
+        </p>
+
+
+        <!-- PLAYER NAME -->
+
+        <div class="name-section">
+
+            <label for="playerName">
+                👤 Enter Your Name
+            </label>
+
+            <input
+                type="text"
+                id="playerName"
+                placeholder="Enter your name"
+                maxlength="15"
+                autocomplete="off"
+            >
+
+            <p id="nameError"
+               class="name-error">
+            </p>
+
+        </div>
+
+
+        <button class="main-btn"
+                onclick="showGame()">
+
+            🎮 Play Game
+
+        </button>
+
+
+        <button class="secondary-btn"
+                onclick="showDailyChallenge()">
+
+            📅 Daily Challenge
+
+        </button>
+
+
+        <button class="secondary-btn"
+                onclick="showInstructions()">
+
+            📖 How to Play
+
+        </button>
+
+
+        <button class="secondary-btn"
+                onclick="showLeaderboard()">
+
+            🏆 Leaderboard
+
+        </button>
+
+
+        <button class="secondary-btn"
+                onclick="showAchievements()">
+
+            🏆 Achievements
+
+        </button>
+
+
+        <div class="home-settings">
+
+            <button onclick="toggleTheme()"
+                    id="themeButton">
+
+                🌙 Dark Mode
+
+            </button>
+
+
+            <button onclick="toggleSound()"
+                    id="soundButton">
+
+                🔊 Sound On
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     DAILY CHALLENGE SCREEN
+========================= -->
+
+<section id="dailyScreen"
+         class="screen hidden">
+
+    <div class="daily-box">
+
+        <div class="daily-icon">
+            📅
+        </div>
+
+        <h2>
+            Daily Challenge
+        </h2>
+
+        <p id="dailyDate"
+           class="daily-date">
+        </p>
+
+
+        <div class="streak-box">
+
+            🔥 Current Streak:
+
+            <strong id="streakCount">
+                0
+            </strong>
+
+            days
+
+        </div>
+
+
+        <div class="challenge-card">
+
+            <h3 id="challengeTitle">
+                Daily Challenge
+            </h3>
+
+            <p id="challengeDescription">
+            </p>
+
+
+            <div class="challenge-reward">
+
+                🏆 Reward:
+
+                <strong id="challengeReward">
+                    +500
+                </strong>
+
+                points
+
             </div>
 
-            <div class="stat">
-                <span>🎯</span>
-                <strong id="moves">0</strong>
-                <small>Moves</small>
-            </div>
 
-            <div class="stat">
-                <span>⭐</span>
-                <strong id="score">1000</strong>
-                <small>Score</small>
-            </div>
+            <div class="challenge-status"
+                 id="challengeStatus">
 
-            <div class="stat">
-                <span>🏆</span>
-                <strong id="bestScore">0</strong>
-                <small>Best</small>
+                🔒 Not Completed
+
             </div>
 
         </div>
 
-        <div id="gameBoard" class="game-board"></div>
 
-        <button class="restart-btn" onclick="restartGame()">
-            🔄 Restart Game
+        <button class="main-btn"
+                onclick="startDailyChallenge()">
+
+            🎮 Start Challenge
+
+        </button>
+
+
+        <button class="secondary-btn"
+                onclick="showHome()">
+
+            🏠 Back to Home
+
         </button>
 
     </div>
 
+</section>
 
-    <!-- Winning Popup -->
 
-    <div id="winScreen" class="win-screen">
 
-        <div class="win-box">
+<!-- =========================
+     INSTRUCTIONS
+========================= -->
 
-            <div class="trophy">🏆</div>
+<section id="instructionScreen"
+         class="screen hidden">
 
-            <h2>Congratulations!</h2>
+    <div class="instruction-box">
 
-            <p>You found all the pairs! 🎉</p>
+        <h2>
+            📖 How to Play
+        </h2>
 
-            <div class="final-stats">
 
-                <p>⏱️ Time: <strong id="finalTime">00:00</strong></p>
+        <div class="instruction">
 
-                <p>🎯 Moves: <strong id="finalMoves">0</strong></p>
+            <p>
+                🃏 Click a card to reveal it.
+            </p>
 
-                <p>⭐ Score: <strong id="finalScore">0</strong></p>
+            <p>
+                🔍 Find another card with
+                the same symbol.
+            </p>
+
+            <p>
+                ✅ Matching cards stay open.
+            </p>
+
+            <p>
+                ❌ Wrong matches cost one life.
+            </p>
+
+            <p>
+                🔥 Consecutive matches increase
+                your combo.
+            </p>
+
+            <p>
+                ⭐ Higher combos give bonus points.
+            </p>
+
+            <p>
+                📅 Complete the Daily Challenge
+                to build your streak.
+            </p>
+
+        </div>
+
+
+        <button class="main-btn"
+                onclick="showHome()">
+
+            🏠 Back to Home
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     LEADERBOARD
+========================= -->
+
+<section id="leaderboardScreen"
+         class="screen hidden">
+
+    <div class="leaderboard-box">
+
+        <h2>
+            🏆 Leaderboard
+        </h2>
+
+        <p class="leaderboard-subtitle">
+            Top 5 Players
+        </p>
+
+
+        <div id="leaderboardList">
+        </div>
+
+
+        <button class="clear-btn"
+                onclick="clearLeaderboard()">
+
+            🗑️ Clear Scores
+
+        </button>
+
+
+        <button class="main-btn"
+                onclick="showHome()">
+
+            🏠 Back to Home
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     ACHIEVEMENTS
+========================= -->
+
+<section id="achievementScreen"
+         class="screen hidden">
+
+    <div class="achievement-box">
+
+        <h2>
+            🏆 Achievements
+        </h2>
+
+        <p class="achievement-subtitle">
+
+            Complete missions and become
+            a Memory Legend!
+
+        </p>
+
+
+        <div id="achievementList">
+        </div>
+
+
+        <button class="main-btn"
+                onclick="showHome()">
+
+            🏠 Back to Home
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     GAME SCREEN
+========================= -->
+
+<section id="gameScreen"
+         class="game-screen hidden">
+
+    <div class="game-container">
+
+
+        <div class="game-header">
+
+            <div>
+
+                <h1>
+                    🧠 Memory Match
+                </h1>
+
+                <p>
+                    👤
+                    <span id="currentPlayer">
+                        Player
+                    </span>
+                </p>
 
             </div>
 
-            <button onclick="restartGame()" class="play-again">
-                🎮 Play Again
+
+            <button class="home-btn"
+                    onclick="showHome()">
+
+                🏠 Home
+
+            </button>
+
+        </div>
+
+
+
+        <!-- DAILY CHALLENGE INDICATOR -->
+
+        <div id="dailyGameBox"
+             class="daily-game-box hidden">
+
+            📅 Daily Challenge
+
+            <span id="dailyProgress">
+                0%
+            </span>
+
+        </div>
+
+
+
+        <!-- DIFFICULTY -->
+
+        <div class="difficulty">
+
+            <button class="level active"
+                    onclick="changeLevel('easy', this)">
+
+                🟢 Easy
+
+            </button>
+
+
+            <button class="level"
+                    onclick="changeLevel('medium', this)">
+
+                🟡 Medium
+
+            </button>
+
+
+            <button class="level"
+                    onclick="changeLevel('hard', this)">
+
+                🔴 Hard
+
+            </button>
+
+        </div>
+
+
+
+        <!-- PLAYER INFO -->
+
+        <div class="player-info">
+
+            👤
+            <span id="gamePlayerName">
+                Player
+            </span>
+
+            <span class="separator">
+                |
+            </span>
+
+            🎮
+            <span id="gameDifficulty">
+                Easy
+            </span>
+
+        </div>
+
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <span>⏱️</span>
+
+                <strong id="timer">
+                    00:00
+                </strong>
+
+                <small>
+                    Time
+                </small>
+
+            </div>
+
+
+            <div class="stat">
+
+                <span>🎯</span>
+
+                <strong id="moves">
+                    0
+                </strong>
+
+                <small>
+                    Moves
+                </small>
+
+            </div>
+
+
+            <div class="stat">
+
+                <span>⭐</span>
+
+                <strong id="score">
+                    1000
+                </strong>
+
+                <small>
+                    Score
+                </small>
+
+            </div>
+
+
+            <div class="stat">
+
+                <span>❤️</span>
+
+                <strong id="lives">
+                    ❤️❤️❤️
+                </strong>
+
+                <small>
+                    Lives
+                </small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- COMBO -->
+
+        <div id="comboDisplay"
+             class="combo-display">
+
+            🔥 Combo ×0
+
+        </div>
+
+
+
+        <!-- BOARD -->
+
+        <div id="gameBoard"
+             class="game-board">
+        </div>
+
+
+
+        <!-- BUTTONS -->
+
+        <div class="game-buttons">
+
+            <button class="restart-btn"
+                    onclick="restartGame()">
+
+                🔄 Restart
+
+            </button>
+
+
+            <button class="sound-game-btn"
+                    onclick="toggleSound()"
+                    id="gameSoundButton">
+
+                🔊
+
+            </button>
+
+
+            <button class="back-btn"
+                    onclick="showHome()">
+
+                🏠 Home
+
             </button>
 
         </div>
 
     </div>
 
+</section>
 
-    <script src="script.js"></script>
+
+
+<!-- =========================
+     WIN SCREEN
+========================= -->
+
+<div id="winScreen"
+     class="popup-screen">
+
+    <div class="win-box">
+
+        <div class="trophy">
+            🏆
+        </div>
+
+
+        <h2>
+            Congratulations!
+        </h2>
+
+
+        <p>
+
+            Great job,
+
+            <strong id="winnerName">
+                Player
+            </strong>!
+
+            🎉
+
+        </p>
+
+
+        <div class="final-stats">
+
+            <p>
+                👤 Player:
+                <strong id="finalPlayer">
+                    Player
+                </strong>
+            </p>
+
+
+            <p>
+                🎮 Difficulty:
+                <strong id="finalDifficulty">
+                    Easy
+                </strong>
+            </p>
+
+
+            <p>
+                ⏱️ Time:
+                <strong id="finalTime">
+                    00:00
+                </strong>
+            </p>
+
+
+            <p>
+                🎯 Moves:
+                <strong id="finalMoves">
+                    0
+                </strong>
+            </p>
+
+
+            <p>
+                ⭐ Score:
+                <strong id="finalScore">
+                    0
+                </strong>
+            </p>
+
+
+            <p>
+                🔥 Best Combo:
+                <strong id="finalCombo">
+                    0
+                </strong>
+            </p>
+
+        </div>
+
+
+        <div id="dailyReward"
+             class="daily-reward hidden">
+
+            📅 Daily Challenge Completed!
+
+            <br>
+
+            🎁 Bonus:
+
+            <strong>
+                +500
+            </strong>
+
+            points
+
+        </div>
+
+
+        <div id="newRecord"
+             class="new-record">
+
+            🏅 NEW HIGH SCORE!
+
+        </div>
+
+
+        <button class="play-again"
+                onclick="restartGame()">
+
+            🎮 Play Again
+
+        </button>
+
+
+        <button class="popup-home"
+                onclick="showHome()">
+
+            🏠 Home
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     GAME OVER
+========================= -->
+
+<div id="gameOverScreen"
+     class="popup-screen">
+
+    <div class="game-over-box">
+
+        <div class="sad">
+            💔
+        </div>
+
+
+        <h2>
+            Game Over
+        </h2>
+
+
+        <p>
+
+            Sorry,
+
+            <strong id="gameOverPlayer">
+                Player
+            </strong>
+
+            😢
+
+        </p>
+
+
+        <p>
+            You ran out of lives!
+        </p>
+
+
+        <p>
+
+            Final Score:
+
+            <strong id="gameOverScore">
+                0
+            </strong>
+
+        </p>
+
+
+        <button class="play-again"
+                onclick="restartGame()">
+
+            🔄 Try Again
+
+        </button>
+
+
+        <button class="popup-home"
+                onclick="showHome()">
+
+            🏠 Home
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script src="script.js"></script>
 
 </body>
+
 </html>
