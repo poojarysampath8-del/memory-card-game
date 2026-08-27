@@ -791,8 +791,30 @@
 
 
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore-compat.js"></script>
+
+<!-- Firebase Configuration -->
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBLesJL9fWQZI06VXOj_B-yUx_1vJGISFg",
+      authDomain: "memory-card-game-5332c.firebaseapp.com",
+      projectId: "memory-card-game-5332c",
+      storageBucket: "memory-card-game-5332c.firebasestorage.app",
+      messagingSenderId: "895819626553",
+      appId: "1:895819626553:web:2690290e63f1041195f5e8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const db = firebase.firestore();
+
+    console.log("Firebase connected successfully!");
+</script>
+
+<!-- Your Game -->
 <script src="script.js"></script>
 
 </body>
-
 </html>
