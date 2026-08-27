@@ -30,6 +30,104 @@ const levels = {
 
 };
 
+/* =========================
+   FIREBASE HELPERS
+========================= */
+
+function getPlayerId() {
+
+    return encodeURIComponent(currentPlayer)
+        .replace(/%/g, "_");
+
+}
+
+
+/* =========================
+   SAVE SCORE TO FIRESTORE
+========================= */
+
+async function saveScoreToFirestore() {
+
+    try {
+
+        await db.collection("scores").add({
+
+            name: currentPlayer,
+
+            score: score,
+
+            difficulty: getDifficultyName(),
+
+            time: formatTime(timer),
+
+            moves: moves,
+
+            bestCombo: bestCombo,
+
+            date: new Date().toISOString(),
+
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+        console.log("Score saved to Firestore.");
+
+    } catch (error) {
+
+        console.error(
+            "Error saving score:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================
+   GET LEADERBOARD FROM FIRESTORE
+========================= */
+
+async function getFirestoreLeaderboard() {
+
+    try {
+
+        const snapshot =
+            await db
+                .collection("scores")
+                .orderBy("score", "desc")
+                .limit(5)
+                .get();
+
+
+        const scores = [];
+
+
+        snapshot.forEach(
+            doc => {
+
+                scores.push(
+                    doc.data()
+                );
+
+            }
+        );
+
+
+        return scores;
+
+    } catch (error) {
+
+        console.error(
+            "Error loading leaderboard:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
 
 /* =========================
    SOUNDS
@@ -356,6 +454,9 @@ function showGame() {
 
 
     currentPlayer = name;
+    loadAchievementsFromFirestore();
+    loadDailyDataFromFirestore();
+
 
 
     localStorage.setItem(
@@ -431,15 +532,22 @@ function showLeaderboard() {
    ACHIEVEMENTS
 ========================= */
 
-function showAchievements() {
+async function showAchievements() {
 
     hideAllScreens();
+
 
     document
         .getElementById(
             "achievementScreen"
         )
-        .classList.remove("hidden");
+        .classList.remove(
+            "hidden"
+        );
+
+
+    await loadAchievementsFromFirestore();
+
 
     displayAchievements();
 
@@ -1707,7 +1815,11 @@ function restartGame() {
    SAVE SCORE
 ========================= */
 
-function saveScore() {
+async function saveScore() {
+
+    /* =========================
+       LOCAL STORAGE
+       ========================= */
 
     let scores =
         JSON.parse(
@@ -1757,10 +1869,15 @@ function saveScore() {
 
     localStorage.setItem(
         "memoryLeaderboard",
-        JSON.stringify(
-            scores
-        )
+        JSON.stringify(scores)
     );
+
+
+    /* =========================
+       FIRESTORE
+       ========================= */
+
+    await saveScoreToFirestore();
 
 }
 
@@ -1769,7 +1886,7 @@ function saveScore() {
    LEADERBOARD
 ========================= */
 
-function displayLeaderboard() {
+async function displayLeaderboard() {
 
     const list =
         document.getElementById(
@@ -1777,12 +1894,17 @@ function displayLeaderboard() {
         );
 
 
-    let scores =
-        JSON.parse(
-            localStorage.getItem(
-                "memoryLeaderboard"
-            )
-        ) || [];
+    list.innerHTML = `
+
+        <p>
+            ⏳ Loading leaderboard...
+        </p>
+
+    `;
+
+
+    const scores =
+        await getFirestoreLeaderboard();
 
 
     list.innerHTML = "";
@@ -1845,23 +1967,26 @@ function displayLeaderboard() {
 
                 </span>
 
+
                 <span>
 
                     ${escapeHTML(
-                        player.name
+                        player.name || "Player"
                     )}
 
                 </span>
 
+
                 <span class="score-value">
 
-                    ⭐ ${player.score}
+                    ⭐ ${player.score || 0}
 
                 </span>
 
+
                 <span class="difficulty-value">
 
-                    ${player.difficulty}
+                    ${player.difficulty || "Easy"}
 
                 </span>
 
@@ -1876,8 +2001,6 @@ function displayLeaderboard() {
     );
 
 }
-
-
 /* =========================
    CLEAR LEADERBOARD
 ========================= */
@@ -1946,7 +2069,7 @@ function getAchievements() {
 }
 
 
-function unlockAchievement(id) {
+async function unlockAchievement(id) {
 
     let unlocked =
         getAchievements();
@@ -1964,15 +2087,124 @@ function unlockAchievement(id) {
     unlocked[id] = true;
 
 
+    /* =========================
+       LOCAL STORAGE
+       ========================= */
+
     localStorage.setItem(
+
         "memoryAchievements",
+
         JSON.stringify(
             unlocked
         )
+
     );
 
 
+    /* =========================
+       FIRESTORE
+       ========================= */
+
+    try {
+
+        const playerId =
+            getPlayerId();
+
+
+        await db
+            .collection("achievements")
+            .doc(playerId)
+            .set({
+
+                playerName:
+                    currentPlayer,
+
+                achievements:
+                    unlocked,
+
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            }, {
+
+                merge: true
+
+            });
+
+
+        console.log(
+            "Achievement saved to Firestore."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error saving achievement:",
+            error
+        );
+
+    }
+
+
     showAchievementMessage(id);
+
+}
+
+/* =========================
+   LOAD ACHIEVEMENTS
+========================= */
+
+async function loadAchievementsFromFirestore() {
+
+    try {
+
+        const playerId =
+            getPlayerId();
+
+
+        const doc =
+            await db
+                .collection("achievements")
+                .doc(playerId)
+                .get();
+
+
+        if (
+            doc.exists
+        ) {
+
+            const data =
+                doc.data();
+
+
+            if (
+                data.achievements
+            ) {
+
+                localStorage.setItem(
+
+                    "memoryAchievements",
+
+                    JSON.stringify(
+                        data.achievements
+                    )
+
+                );
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error loading achievements:",
+            error
+        );
+
+    }
 
 }
 
@@ -2094,6 +2326,9 @@ function checkAchievements() {
 
 
     completedGames++;
+    saveCompletedGamesToFirestore(
+        completedGames
+    );
 
 
     localStorage.setItem(
@@ -2108,6 +2343,56 @@ function checkAchievements() {
 
         unlockAchievement(
             "memoryLegend"
+        );
+
+    }
+
+}
+/* =========================
+   SAVE COMPLETED GAMES
+========================= */
+
+async function saveCompletedGamesToFirestore(
+    completedGames
+) {
+
+    try {
+
+        const playerId =
+            getPlayerId();
+
+
+        await db
+            .collection("players")
+            .doc(playerId)
+            .set({
+
+                playerName:
+                    currentPlayer,
+
+                completedGames:
+                    completedGames,
+
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            }, {
+
+                merge: true
+
+            });
+
+
+        console.log(
+            "Completed games saved."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error saving completed games:",
+            error
         );
 
     }
@@ -2233,12 +2518,123 @@ function getDailyData() {
 }
 
 
-function saveDailyData(data) {
+async function saveDailyData(data) {
+
+    /* =========================
+       LOCAL STORAGE
+       ========================= */
 
     localStorage.setItem(
+
         "memoryDailyData",
+
         JSON.stringify(data)
+
     );
+
+
+    /* =========================
+       FIRESTORE
+       ========================= */
+
+    try {
+
+        const playerId =
+            getPlayerId();
+
+
+        await db
+            .collection("dailyData")
+            .doc(playerId)
+            .set({
+
+                playerName:
+                    currentPlayer,
+
+                lastCompleted:
+                    data.lastCompleted,
+
+                streak:
+                    data.streak,
+
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            }, {
+
+                merge: true
+
+            });
+
+
+        console.log(
+            "Daily data saved to Firestore."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error saving daily data:",
+            error
+        );
+
+    }
+
+}
+/* =========================
+   LOAD DAILY DATA
+========================= */
+
+async function loadDailyDataFromFirestore() {
+
+    try {
+
+        const playerId =
+            getPlayerId();
+
+
+        const doc =
+            await db
+                .collection("dailyData")
+                .doc(playerId)
+                .get();
+
+
+        if (
+            doc.exists
+        ) {
+
+            const data =
+                doc.data();
+
+
+            localStorage.setItem(
+
+                "memoryDailyData",
+
+                JSON.stringify({
+
+                    lastCompleted:
+                        data.lastCompleted || null,
+
+                    streak:
+                        data.streak || 0
+
+                })
+
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error loading daily data:",
+            error
+        );
+
+    }
 
 }
 
