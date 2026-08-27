@@ -2,13 +2,49 @@
    GAME DATA
 ========================= */
 
-const emojis = [
+/* =========================
+   EMOJI THEMES
+========================= */
 
-    "🍎", "🍌", "🍇", "🍊",
-    "🍉", "🍓", "🥝", "🍍",
-    "🥭", "🍒", "🥑", "🌽"
+const emojiThemes = {
 
-];
+    fruits: [
+        "🍎", "🍌", "🍇", "🍊",
+        "🍉", "🍓", "🥝", "🍍",
+        "🥭", "🍒", "🥑", "🌽"
+    ],
+
+    animals: [
+        "🐶", "🐱", "🐭", "🐹",
+        "🐰", "🦊", "🐻", "🐼",
+        "🐨", "🐯", "🦁", "🐸"
+    ],
+
+    vehicles: [
+        "🚗", "🚕", "🚙", "🚌",
+        "🏎️", "🚓", "🚑", "🚒",
+        "🚲", "✈️", "🚁", "🚢"
+    ],
+
+    sports: [
+        "⚽", "🏀", "🏈", "⚾",
+        "🎾", "🏐", "🏉", "🥊",
+        "🏆", "🥇", "⛳", "🏓"
+    ],
+
+    faces: [
+        "😀", "😃", "😄", "😁",
+        "😆", "😅", "😂", "🤣",
+        "😊", "😎", "🤩", "🥳"
+    ],
+
+    nature: [
+        "🌸", "🌺", "🌻", "🌹",
+        "🌷", "🌱", "🌲", "🌳",
+        "🍀", "🌴", "🌵", "🌈"
+    ]
+
+};
 
 
 const levels = {
@@ -942,8 +978,33 @@ function startGame() {
         levels[currentLevel].pairs;
 
 
-    let selectedEmojis =
-        emojis.slice(
+    /* =========================
+   RANDOM EMOJI THEME
+========================= */
+
+const themeNames =
+    Object.keys(emojiThemes);
+
+const randomTheme =
+    themeNames[
+        Math.floor(
+            Math.random() *
+            themeNames.length
+        )
+    ];
+
+const selectedTheme =
+    emojiThemes[randomTheme];
+
+
+/* Select required number of emojis */
+
+let selectedEmojis =
+    [...selectedTheme]
+        .sort(
+            () => Math.random() - 0.5
+        )
+        .slice(
             0,
             totalPairs
         );
